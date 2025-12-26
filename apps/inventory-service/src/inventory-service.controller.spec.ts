@@ -11,7 +11,9 @@ describe('InventoryServiceController', () => {
       providers: [InventoryServiceService],
     }).compile();
 
-    inventoryServiceController = app.get<InventoryServiceController>(InventoryServiceController);
+    inventoryServiceController = app.get<InventoryServiceController>(
+      InventoryServiceController,
+    );
   });
 
   describe('root', () => {
