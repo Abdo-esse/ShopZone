@@ -1,6 +1,7 @@
 // apps/api-gateway/src/kafka/kafka.module.ts
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { KafkaClientService } from './kafka-client.service';
 
 @Module({
   imports: [
@@ -16,10 +17,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           consumer: {
             groupId: 'api-gateway-consumer',
           },
+          producer: {
+            allowAutoTopicCreation: true,
+          },
+          producerOnlyMode: false, // Required for request-reply pattern
         },
       },
     ]),
   ],
-  exports: [ClientsModule],
+  providers: [KafkaClientService],
+  exports: [ClientsModule, KafkaClientService],
 })
-export class KafkaModule {}
+export class KafkaModule { }
+

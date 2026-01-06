@@ -28,8 +28,20 @@ kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic heal
 
 # Create user-related topics
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.registered --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.login --partitions 3 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.verified --partitions 3 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.updated --partitions 3 --replication-factor 1
+
+# Reply topics for request-reply pattern (REQUIRED for ClientKafka.send())
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.registered.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.login.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.refresh.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.logout.reply --partitions 3 --replication-factor 1
+
+# Original topics for request-reply
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.refresh --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.logout --partitions 3 --replication-factor 1
+
 
 # Create order-related topics
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic order.created --partitions 3 --replication-factor 1

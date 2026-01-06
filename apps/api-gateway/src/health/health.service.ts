@@ -1,11 +1,11 @@
 // apps/api-gateway/src/health/health.service.ts
-import { Injectable, Inject, OnModuleInit, Logger } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Injectable, Logger } from '@nestjs/common';
 import { timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { KafkaClientService } from '../kafka/kafka-client.service';
 
 @Injectable()
-export class HealthService implements OnModuleInit {
+export class HealthService {
   private readonly logger = new Logger(HealthService.name);
 
   // Map services to their specific health topics
@@ -26,31 +26,15 @@ export class HealthService implements OnModuleInit {
   };
 
   constructor(
-    @Inject('KAFKA_CLIENT')
-    private readonly kafka: ClientKafka,
+    private readonly kafkaClient: KafkaClientService,
   ) { }
 
-  async onModuleInit() {
-    // Subscribe to response topics for all services
-    Object.values(this.serviceTopics).forEach((topic) => {
-      this.kafka.subscribeToResponseOf(topic);
-    });
-
-    // Subscribe to response topics for database health checks
-    Object.values(this.healthDbTopics).forEach((topic) => {
-      this.kafka.subscribeToResponseOf(topic);
-    });
-
-    // Connect to Kafka
-    await this.kafka.connect();
-    this.logger.log('Connected to Kafka for health checks');
-  }
-
   async checkAll() {
+    const kafka = this.kafkaClient.getClient();
     const results = await Promise.all(
       Object.entries(this.serviceTopics).map(async ([service, topic]) => {
         try {
-          const response = await this.kafka
+          const response = await kafka
             .send(topic, { service })
             .pipe(
               timeout(3000),
@@ -76,10 +60,11 @@ export class HealthService implements OnModuleInit {
   }
 
   async checkAllDatabases() {
+    const kafka = this.kafkaClient.getClient();
     const results = await Promise.all(
       Object.entries(this.healthDbTopics).map(async ([service, topic]) => {
         try {
-          const response = await this.kafka
+          const response = await kafka
             .send(topic, { service })
             .pipe(
               timeout(5000),
@@ -104,3 +89,4 @@ export class HealthService implements OnModuleInit {
     };
   }
 }
+
