@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Inventory {
+  id        String   @id @default(uuid())
+  productId String   @unique
+  
+  quantity  Int      @default(0)
+  reserved  Int      @default(0)
+  
+  minStock  Int      @default(0)
+  maxStock  Int?
+  
+  location  String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StockMovement {
+  id          String   @id @default(uuid())
+  productId   String
+  
+  quantity    Int
+  type        String   // IN, OUT, ADJUSTMENT
+  reason      String?
+  
+  createdAt   DateTime @default(now())
+}

@@ -1,98 +1,217 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ShopZone 🛒
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A scalable **e-commerce microservices platform** built with **NestJS** and designed for high performance and modularity.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Overview
 
-## Description
+ShopZone is a full-stack e-commerce solution implemented as a **microservices monorepo**. It uses event-driven architecture with **Apache Kafka** for inter-service communication, **PostgreSQL** databases for data persistence, **Redis** for caching, and **MinIO** for object storage.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🏗️ Architecture
 
-## Project setup
-
-```bash
-$ pnpm install
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        API Gateway                          │
+│                       (Port 3000)                           │
+└───────────────────┬─────────────────────────────────────────┘
+                    │ Kafka
+    ┌───────────────┼───────────────────────────────┐
+    │               │               │               │
+┌───▼───┐      ┌───▼───┐      ┌───▼───┐      ┌───▼───┐
+│ Auth  │      │Catalog│      │ Order │      │Invent.│
+│Service│      │Service│      │Service│      │Service│
+└───┬───┘      └───┬───┘      └───┬───┘      └───┬───┘
+    │              │              │              │
+┌───▼───┐      ┌───▼───┐      ┌───▼───┐      ┌───▼───┐
+│auth-db│      │catelog│      │order- │      │invent.│
+│       │      │  -db  │      │  db   │      │  -db  │
+└───────┘      └───────┘      └───────┘      └───────┘
 ```
 
-## Compile and run the project
+## 📁 Project Structure
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```
+ShopZone/
+├── apps/                       # Microservices
+│   ├── api-gateway/           # Entry point for all client requests
+│   ├── auth-service/          # Authentication & authorization
+│   ├── catalog-service/       # Product catalog management
+│   ├── inventory-service/     # Stock & inventory tracking
+│   ├── order-service/         # Order processing
+│   └── store-service/         # Store management
+│
+├── libs/                       # Shared libraries
+│   └── shared/                # Common utilities, DTOs, Prisma service
+│       └── src/
+│           ├── dto/           # Data Transfer Objects
+│           ├── enums/         # Shared enumerations
+│           ├── events/        # Kafka event definitions
+│           ├── interfaces/    # TypeScript interfaces
+│           └── prisma/        # Prisma service
+│
+├── scripts/                    # Utility scripts
+└── docker-compose.yml         # Container orchestration
 ```
 
-## Run tests
+## 🛠️ Technology Stack
+
+| Component          | Technology                          |
+|--------------------|-------------------------------------|
+| **Framework**      | NestJS 11.x                        |
+| **Language**       | TypeScript 5.x                     |
+| **Package Manager**| pnpm                               |
+| **Message Broker** | Apache Kafka (Confluent 7.6)       |
+| **Databases**      | PostgreSQL 16                      |
+| **ORM**            | Prisma 7.x                         |
+| **Caching**        | Redis 7                            |
+| **Object Storage** | MinIO                              |
+| **Authentication** | Passport.js + JWT                  |
+| **Validation**     | class-validator, class-transformer |
+
+## 🔧 Services Overview
+
+### API Gateway
+- Single entry point for all client requests
+- Request routing and load balancing
+- Health checks at `/health`
+
+### Auth Service
+- User registration and login
+- JWT-based authentication
+- Role-based access control (USER, ADMIN)
+- Email/phone verification support
+
+### Catalog Service
+- Product management (CRUD operations)
+- Category organization
+- Product search and filtering
+
+### Inventory Service
+- Real-time stock tracking
+- Inventory alerts and notifications
+- Stock reservation for orders
+
+### Order Service
+- Order creation and management
+- Order status tracking
+- Payment integration hooks
+
+### Store Service
+- Multi-store support
+- Store configuration management
+- Store-specific settings
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm
+- Docker & Docker Compose
+
+### Installation
 
 ```bash
-# unit tests
-$ pnpm run test
+# Clone the repository
+git clone https://github.com/your-username/ShopZone.git
+cd ShopZone
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Install dependencies
+pnpm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Running with Docker
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Start all services (databases, Kafka, microservices)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Running for Development
 
-## Resources
+```bash
+# Start infrastructure only
+docker-compose up -d zookeeper kafka redis minio auth-db catalog-db order-db inventory-db store-db
 
-Check out a few resources that may come in handy when working with NestJS:
+# Run specific service
+pnpm run start:dev auth-service
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 📊 Infrastructure Services
 
-## Support
+| Service    | Port  | Description                          |
+|------------|-------|--------------------------------------|
+| API Gateway| 3000  | Main API endpoint                    |
+| Kafka      | 9092  | Message broker                       |
+| Kafka UI   | 8080  | Kafka management dashboard           |
+| Redis      | 6379  | Caching layer                        |
+| MinIO      | 9000  | Object storage API                   |
+| MinIO UI   | 9001  | MinIO management console             |
+| Auth DB    | 5433  | Authentication database              |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 📝 API Endpoints
 
-## Stay in touch
+### Health Checks
+```
+GET /health          # API Gateway health
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Authentication
+```
+POST /auth/register  # User registration
+POST /auth/login     # User login
+GET  /auth/me        # Get current user
+```
 
-## License
+## 🗄️ Database Schema
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Auth Service - User Model
+
+| Field           | Type     | Description                  |
+|-----------------|----------|------------------------------|
+| id              | UUID     | Primary key                  |
+| email           | String   | Unique email address         |
+| phone           | String?  | Optional phone number        |
+| password        | String   | Hashed password              |
+| role            | Enum     | USER or ADMIN                |
+| isEmailVerified | Boolean  | Email verification status    |
+| isPhoneVerified | Boolean  | Phone verification status    |
+| isActive        | Boolean  | Account active status        |
+| isBlocked       | Boolean  | Account blocked status       |
+| createdAt       | DateTime | Account creation timestamp   |
+| updatedAt       | DateTime | Last update timestamp        |
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+pnpm run test
+
+# Run e2e tests
+pnpm run test:e2e
+
+# Run tests with coverage
+pnpm run test:cov
+```
+
+## 📚 Scripts
+
+| Command           | Description                        |
+|-------------------|------------------------------------|
+| `pnpm run start`  | Start the main application         |
+| `pnpm run start:dev` | Start in development (watch mode) |
+| `pnpm run start:prod` | Start in production              |
+| `pnpm run build`  | Build the project                  |
+| `pnpm run lint`   | Run ESLint                         |
+| `pnpm run format` | Format code with Prettier          |
+| `pnpm run test`   | Run unit tests                     |
+
+## 📄 License
+
+This project is UNLICENSED.
+
+---
+
+Built with ❤️ using [NestJS](https://nestjs.com/)

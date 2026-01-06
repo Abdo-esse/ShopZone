@@ -6,7 +6,7 @@ export class AuthServiceController {
   constructor(private readonly authServiceService: AuthServiceService) {}
 
   @Get()
-  getHello(): string {
-    return this.authServiceService.getHello();
+  getHello(): void {
+     this.authServiceService.onModuleInit();
   }
 }

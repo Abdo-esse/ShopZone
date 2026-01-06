@@ -88,7 +88,7 @@ services:
       - minio-data:/data
 
   # =====================
-  # DATABASES
+  # DATABASES && ADMINER
   # =====================
   auth-db:
     image: postgres:16
@@ -113,6 +113,8 @@ services:
       POSTGRES_DB: catalog_db
       POSTGRES_USER: catalog_user
       POSTGRES_PASSWORD: catalog_pass
+    ports:
+      - "5434:5432"
     volumes:
       - catalog-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -127,6 +129,8 @@ services:
       POSTGRES_DB: order_db
       POSTGRES_USER: order_user
       POSTGRES_PASSWORD: order_pass
+    ports:
+      - "5435:5432"
     volumes:
       - order-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -141,6 +145,8 @@ services:
       POSTGRES_DB: inventory_db
       POSTGRES_USER: inventory_user
       POSTGRES_PASSWORD: inventory_pass
+    ports:
+      - "5436:5432"
     volumes:
       - inventory-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -148,20 +154,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      auth-db:
+        condition: service_started
+      catalog-db:
+        condition: service_started
+      order-db:
+        condition: service_started
+      inventory-db:
+        condition: service_started
 
-  store-db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: store_db
-      POSTGRES_USER: store_user
-      POSTGRES_PASSWORD: store_pass
-    volumes:
-      - store-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 
   # =====================
@@ -192,6 +201,8 @@ services:
     build:
       context: .
       dockerfile: apps/auth-service/Dockerfile
+    env_file:
+      - apps/auth-service/.env
     volumes:
       - .:/app
       - /app/node_modules
@@ -211,6 +222,8 @@ services:
     build:
       context: .
       dockerfile: apps/catalog-service/Dockerfile
+    env_file:
+      - apps/catalog-service/.env
     volumes:
       - .:/app
       - /app/node_modules
@@ -229,6 +242,8 @@ services:
     build:
       context: .
       dockerfile: apps/order-service/Dockerfile
+    env_file:
+      - apps/order-service/.env
     volumes:
       - .:/app
       - /app/node_modules
@@ -247,6 +262,8 @@ services:
     build:
       context: .
       dockerfile: apps/inventory-service/Dockerfile
+    env_file:
+      - apps/inventory-service/.env
     volumes:
       - .:/app
       - /app/node_modules
@@ -261,24 +278,6 @@ services:
       KAFKA_BROKER: kafka:9092
       NODE_OPTIONS: --max-old-space-size=4096
 
-  store-service:
-    build:
-      context: .
-      dockerfile: apps/store-service/Dockerfile
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-init:
-        condition: service_completed_successfully
-      store-db:
-        condition: service_started
-    environment:
-      KAFKA_BROKER: kafka:9092
-      NODE_OPTIONS: --max-old-space-size=4096
-
 volumes:
   redis-data:
   minio-data:
@@ -286,4 +285,3 @@ volumes:
   catalog-db-data:
   order-db-data:
   inventory-db-data:
-  store-db-data:

@@ -19,6 +19,13 @@ kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic heal
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health.order --partitions 1 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health.store --partitions 1 --replication-factor 1
 
+# Create dedicated health check topics
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health-db.auth --partitions 1 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health-db.catalog --partitions 1 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health-db.inventory --partitions 1 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health-db.order --partitions 1 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic health-db.store --partitions 1 --replication-factor 1
+
 # Create user-related topics
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.registered --partitions 3 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user.verified --partitions 3 --replication-factor 1

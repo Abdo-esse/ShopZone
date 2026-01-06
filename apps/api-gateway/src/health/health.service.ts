@@ -17,6 +17,14 @@ export class HealthService implements OnModuleInit {
     'store-service': 'health.store',
   };
 
+  // Map services to their database health topics
+  private readonly healthDbTopics = {
+    'auth-service': 'health-db.auth',
+    'catalog-service': 'health-db.catalog',
+    'inventory-service': 'health-db.inventory',
+    'order-service': 'health-db.order',
+  };
+
   constructor(
     @Inject('KAFKA_CLIENT')
     private readonly kafka: ClientKafka,
@@ -25,6 +33,11 @@ export class HealthService implements OnModuleInit {
   async onModuleInit() {
     // Subscribe to response topics for all services
     Object.values(this.serviceTopics).forEach((topic) => {
+      this.kafka.subscribeToResponseOf(topic);
+    });
+
+    // Subscribe to response topics for database health checks
+    Object.values(this.healthDbTopics).forEach((topic) => {
       this.kafka.subscribeToResponseOf(topic);
     });
 
@@ -59,6 +72,35 @@ export class HealthService implements OnModuleInit {
     return {
       status: results.every((r) => r.status === 'UP') ? 'UP' : 'DEGRADED',
       services: results,
+    };
+  }
+
+  async checkAllDatabases() {
+    const results = await Promise.all(
+      Object.entries(this.healthDbTopics).map(async ([service, topic]) => {
+        try {
+          const response = await this.kafka
+            .send(topic, { service })
+            .pipe(
+              timeout(5000),
+              catchError((error) => {
+                this.logger.warn(`Database health check failed for ${service}: ${error.message}`);
+                return of({ service, database: 'DOWN', error: error.message });
+              }),
+            )
+            .toPromise();
+
+          return response || { service, database: 'DOWN' };
+        } catch (error) {
+          this.logger.error(`Error checking database for ${service}:`, error);
+          return { service, database: 'DOWN', error: error instanceof Error ? error.message : String(error), };
+        }
+      }),
+    );
+
+    return {
+      status: results.every((r) => r.database === 'UP') ? 'UP' : 'DEGRADED',
+      databases: results,
     };
   }
 }
