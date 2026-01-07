@@ -15,6 +15,7 @@ export class ProductController {
 
     @MessagePattern('catalog.product.findAll')
     findAll() {
+        console.log('findAll');
         return this.productService.findAll();
     }
 

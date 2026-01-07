@@ -1,9 +1,14 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsBoolean, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsUUID, IsEnum } from 'class-validator';
 
+export enum ProductStatus {
+    DRAFT = 'DRAFT',
+    PUBLISHED = 'PUBLISHED',
+    ARCHIVED = 'ARCHIVED',
+}
 export class CreateProductDto {
     @IsString()
     @IsNotEmpty()
-    name: string;
+    name!: string;
 
     @IsString()
     @IsOptional()
@@ -11,17 +16,17 @@ export class CreateProductDto {
 
     @IsNumber()
     @IsNotEmpty()
-    price: number;
+    price!: number;
 
     @IsString()
     @IsNotEmpty()
-    sku: string;
+    sku!: string;
 
     @IsUUID()
     @IsOptional()
     categoryId?: string;
 
-    @IsBoolean()
+    @IsEnum(ProductStatus)
     @IsOptional()
-    isActive?: boolean;
+    status?: ProductStatus;
 }

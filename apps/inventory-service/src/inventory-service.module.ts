@@ -3,10 +3,13 @@ import { InventoryServiceController } from './inventory-service.controller';
 import { InventoryServiceService } from './inventory-service.service';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from 'libs/shared/src/prisma/prisma.module';
+import { StockService } from './stock.service';
+import { InventoryConsumer } from './inventory.consumer';
+import { StockController } from './stock.controller';
 
 @Module({
   imports: [HealthModule, PrismaModule],
-  controllers: [InventoryServiceController],
-  providers: [InventoryServiceService],
+  controllers: [InventoryServiceController, InventoryConsumer, StockController],
+  providers: [InventoryServiceService, StockService],
 })
 export class InventoryServiceModule { }

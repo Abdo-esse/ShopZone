@@ -54,6 +54,34 @@ kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic inve
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic inventory.released --partitions 3 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic inventory.updated --partitions 3 --replication-factor 1
 
+# Create catalog-related topics (Category)
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.create --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.findAll --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.findOne --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.update --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.remove --partitions 3 --replication-factor 1
+
+# Category Replies
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.create.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.findAll.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.findOne.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.update.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.category.remove.reply --partitions 3 --replication-factor 1
+
+# Create catalog-related topics (Product)
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.create --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.findAll --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.findOne --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.update --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.remove --partitions 3 --replication-factor 1
+
+# Product Replies
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.create.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.findAll.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.findOne.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.update.reply --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic catalog.product.remove.reply --partitions 3 --replication-factor 1
+
 echo "Listing all topics:"
 kafka-topics --list --bootstrap-server kafka:9092
 
