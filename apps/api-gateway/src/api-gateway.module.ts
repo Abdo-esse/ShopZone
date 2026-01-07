@@ -5,10 +5,11 @@ import { ApiGatewayService } from './api-gateway.service';
 import { KafkaModule } from './kafka/kafka.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalog/catalog.module';
 
 @Module({
-  imports: [KafkaModule, HealthModule, AuthModule],
+  imports: [KafkaModule, HealthModule, AuthModule, CatalogModule],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
 })
-export class ApiGatewayModule {}
+export class ApiGatewayModule { }

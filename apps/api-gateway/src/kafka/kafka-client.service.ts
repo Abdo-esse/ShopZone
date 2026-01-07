@@ -25,6 +25,17 @@ export class KafkaClientService implements OnModuleInit {
         'health-db.catalog',
         'health-db.inventory',
         'health-db.order',
+        // Catalog topics
+        'catalog.category.create',
+        'catalog.category.findAll',
+        'catalog.category.findOne',
+        'catalog.category.update',
+        'catalog.category.remove',
+        'catalog.product.create',
+        'catalog.product.findAll',
+        'catalog.product.findOne',
+        'catalog.product.update',
+        'catalog.product.remove',
     ];
 
     constructor(
