@@ -33,18 +33,18 @@ services:
   # =====================
   # KAFKA UI
   # =====================
-  # kafka-ui:
-  #   image: provectuslabs/kafka-ui:latest
-  #   container_name: kafka-ui
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     KAFKA_CLUSTERS_0_NAME: local-kafka
-  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
 
   # =====================
   # KAFKA INIT (Create Topics)
@@ -64,47 +64,47 @@ services:
   # =====================
   # REDIS
   # =====================
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
-  #   command: redis-server --appendonly yes
-  #   volumes:
-  #     - redis-data:/data
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
 
   # =====================
   # MINIO
   # =====================
-  # minio:
-  #   image: minio/minio:latest
-  #   command: server /data --console-address ":9001"
-  #   environment:
-  #     MINIO_ROOT_USER: minioadmin
-  #     MINIO_ROOT_PASSWORD: minioadmin123
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   volumes:
-  #     - minio-data:/data
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
 
   # =====================
   # DATABASES && ADMINER
   # =====================
-  # auth-db:
-  #   image: postgres:16
-  #   environment:
-  #     POSTGRES_DB: auth_db
-  #     POSTGRES_USER: auth_user
-  #     POSTGRES_PASSWORD: auth_pass
-  #   ports:
-  #     - "5433:5432"
-  #   volumes:
-  #     - auth-db-data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U auth_user"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  auth-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   catalog-db:
@@ -123,53 +123,53 @@ services:
       timeout: 5s
       retries: 5
 
-  # order-db:
-  #   image: postgres:16
-  #   environment:
-  #     POSTGRES_DB: order_db
-  #     POSTGRES_USER: order_user
-  #     POSTGRES_PASSWORD: order_pass
-  #   ports:
-  #     - "5435:5432"
-  #   volumes:
-  #     - order-db-data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U auth_user"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  order-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # inventory-db:
-  #   image: postgres:16
-  #   environment:
-  #     POSTGRES_DB: inventory_db
-  #     POSTGRES_USER: inventory_user
-  #     POSTGRES_PASSWORD: inventory_pass
-  #   ports:
-  #     - "5436:5432"
-  #   volumes:
-  #     - inventory-db-data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U auth_user"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  inventory-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: inventory_pass
+    ports:
+      - "5436:5432"
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   
-  # adminer:
-  #   image: adminer:latest
-  #   container_name: adminer
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     auth-db:
-  #       condition: service_started
-  #     catalog-db:
-  #       condition: service_started
-  #     order-db:
-  #       condition: service_started
-  #     inventory-db:
-  #       condition: service_started
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      auth-db:
+        condition: service_started
+      catalog-db:
+        condition: service_started
+      order-db:
+        condition: service_started
+      inventory-db:
+        condition: service_started
 
 
 
@@ -197,26 +197,26 @@ services:
   # =====================
   # MICROSERVICES
   # =====================
-  # auth-service:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/auth-service/Dockerfile
-  #   env_file:
-  #     - apps/auth-service/.env
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #     kafka-init:
-  #       condition: service_completed_successfully
-  #     auth-db:
-  #       condition: service_started
-  #   environment:
-  #     DATABASE_URL: postgres://auth_user:auth_pass@auth-db:5432/auth_db
-  #     KAFKA_BROKER: kafka:9092
-  #     NODE_OPTIONS: --max-old-space-size=4096
+  auth-service:
+    build:
+      context: .
+      dockerfile: apps/auth-service/Dockerfile
+    env_file:
+      - apps/auth-service/.env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      auth-db:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://auth_user:auth_pass@auth-db:5432/auth_db
+      KAFKA_BROKER: kafka:9092
+      NODE_OPTIONS: --max-old-space-size=4096
 
   catalog-service:
     build:
@@ -238,50 +238,50 @@ services:
       KAFKA_BROKER: kafka:9092
       NODE_OPTIONS: --max-old-space-size=4096
 
-  # order-service:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/order-service/Dockerfile
-  #   env_file:
-  #     - apps/order-service/.env
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #     kafka-init:
-  #       condition: service_completed_successfully
-  #     order-db:
-  #       condition: service_started
-  #   environment:
-  #     KAFKA_BROKER: kafka:9092
-  #     NODE_OPTIONS: --max-old-space-size=4096
+  order-service:
+    build:
+      context: .
+      dockerfile: apps/order-service/Dockerfile
+    env_file:
+      - apps/order-service/.env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      order-db:
+        condition: service_started
+    environment:
+      KAFKA_BROKER: kafka:9092
+      NODE_OPTIONS: --max-old-space-size=4096
 
-  # inventory-service:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/inventory-service/Dockerfile
-  #   env_file:
-  #     - apps/inventory-service/.env
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #     kafka-init:
-  #       condition: service_completed_successfully
-  #     inventory-db:
-  #       condition: service_started
-  #   environment:
-  #     KAFKA_BROKER: kafka:9092
-  #     NODE_OPTIONS: --max-old-space-size=4096
+  inventory-service:
+    build:
+      context: .
+      dockerfile: apps/inventory-service/Dockerfile
+    env_file:
+      - apps/inventory-service/.env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      inventory-db:
+        condition: service_started
+    environment:
+      KAFKA_BROKER: kafka:9092
+      NODE_OPTIONS: --max-old-space-size=4096
 
 volumes:
-  # redis-data:
-  # minio-data:
-  # auth-db-data:
+  redis-data:
+  minio-data:
+  auth-db-data:
   catalog-db-data:
-  # order-db-data:
-  # inventory-db-data:
+  order-db-data:
+  inventory-db-data:
