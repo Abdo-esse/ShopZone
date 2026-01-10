@@ -8,8 +8,17 @@ import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { InventoryModule } from './inventory/inventory.module';
 
+import { OrderModule } from './order/order.module';
+
 @Module({
-  imports: [KafkaModule, HealthModule, AuthModule, CatalogModule, InventoryModule],
+  imports: [
+    KafkaModule,
+    HealthModule,
+    AuthModule,
+    CatalogModule,
+    InventoryModule,
+    OrderModule
+  ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
 })
