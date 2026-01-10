@@ -35,7 +35,16 @@ export class KafkaClientService implements OnModuleInit {
         'catalog.product.findAll',
         'catalog.product.findOne',
         'catalog.product.update',
+        'catalog.product.update',
         'catalog.product.remove',
+        // Inventory topics
+        'inventory.stock.get',
+        'inventory.stock.check',
+        'inventory.stock.in-stock',
+        'inventory.stock.adjust',
+        'inventory.stock.reserve',
+        'inventory.stock.confirm',
+        'inventory.stock.release',
     ];
 
     constructor(

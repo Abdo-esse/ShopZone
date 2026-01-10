@@ -6,9 +6,10 @@ import { KafkaModule } from './kafka/kafka.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
-  imports: [KafkaModule, HealthModule, AuthModule, CatalogModule],
+  imports: [KafkaModule, HealthModule, AuthModule, CatalogModule, InventoryModule],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
 })
