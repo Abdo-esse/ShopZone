@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
 import { KafkaClientService } from '../kafka/kafka-client.service';
 import { firstValueFrom } from 'rxjs';
+import { CreateProductDto } from '../../../../libs/shared/src/dto/create-product.dto';
 
 @Controller('catalog')
 export class CatalogController {
@@ -44,7 +45,8 @@ export class CatalogController {
 
     // Products
     @Post('products')
-    createProduct(@Body() createProductDto: any) {
+    createProduct(@Body() createProductDto: CreateProductDto) {
+        console.log(createProductDto);
         return firstValueFrom(
             this.kafkaClient.getClient().send('catalog.product.create', createProductDto),
         );

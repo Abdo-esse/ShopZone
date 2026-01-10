@@ -1,7 +1,7 @@
 import { ConflictException, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'libs/shared/src/prisma/prisma.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto } from '../../../../libs/shared/src/dto/create-product.dto';
+import { UpdateProductDto } from '../../../../libs/shared/src/dto/update-product.dto';
 import { ClientKafka } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 

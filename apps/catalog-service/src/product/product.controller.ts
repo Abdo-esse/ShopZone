@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto } from '../../../../libs/shared/src/dto/create-product.dto';
+import { UpdateProductDto } from '../../../../libs/shared/src/dto/update-product.dto';
 
 @Controller()
 export class ProductController {
@@ -10,6 +10,7 @@ export class ProductController {
 
     @MessagePattern('catalog.product.create')
     create(@Payload() createProductDto: CreateProductDto) {
+        console.log(createProductDto,"in catalog service");
         return this.productService.create(createProductDto);
     }
 

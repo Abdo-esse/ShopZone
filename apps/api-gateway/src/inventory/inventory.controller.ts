@@ -1,6 +1,11 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, UseGuards } from '@nestjs/common';
 import { KafkaClientService } from '../kafka/kafka-client.service';
 import { firstValueFrom } from 'rxjs';
+import { UpdateFullInventoryDto } from 'libs/shared/src/dto/update-full-inventory.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from 'libs/shared/src/enum/user-role.enum';
 
 @Controller('inventory/stock')
 export class InventoryController {
@@ -57,6 +62,17 @@ export class InventoryController {
     ) {
         return firstValueFrom(
             this.kafkaClient.getClient().send('inventory.stock.release', { productId, ...data }),
+        );
+    }
+    @Patch(':productId')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    async updateInventory(
+        @Param('productId') productId: string,
+        @Body() data: UpdateFullInventoryDto
+    ) {
+        return firstValueFrom(
+            this.kafkaClient.getClient().send('inventory.update', { productId, ...data }),
         );
     }
 }

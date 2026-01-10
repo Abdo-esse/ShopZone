@@ -137,4 +137,27 @@ export class StockService {
     async decreaseStock(productId: string, quantity: number, reason?: string) {
         return this.adjustStock(productId, -quantity, reason || 'Stock decrease');
     }
+    async updateDetails(productId: string, data: Partial<{ location: string; minStock: number; maxStock: number; quantity: number; reserved: number }>) {
+        const inventory = await this.getInventory(productId);
+
+        // Log movement if quantity changes absolutely
+        if (typeof data.quantity === 'number' && data.quantity !== inventory.quantity) {
+            const delta = data.quantity - inventory.quantity;
+            await this.prisma.stockMovement.create({
+                data: {
+                    productId,
+                    quantity: delta,
+                    type: 'ADJUSTMENT',
+                    reason: 'Full update override',
+                }
+            });
+        }
+
+        return this.prisma.inventory.update({
+            where: { productId },
+            data: {
+                ...data,
+            }
+        });
+    }
 }

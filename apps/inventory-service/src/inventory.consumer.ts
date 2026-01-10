@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { StockService } from './stock.service';
+import { UpdateFullInventoryDto } from 'libs/shared/src/dto/update-full-inventory.dto';
 
 @Controller()
 export class InventoryConsumer {
@@ -46,5 +47,12 @@ export class InventoryConsumer {
     @MessagePattern('inventory.stock.release')
     async releaseStock(@Payload() data: { productId: string; quantity: number }) {
         return this.stockService.releaseReservedStock(data.productId, data.quantity);
+    }
+
+    @MessagePattern('inventory.update')
+    async updateInventory(@Payload() data: { productId: string } & UpdateFullInventoryDto) {
+        const { productId, ...updateData } = data;
+        console.log(`[Inventory] Full update for product ${productId}`, updateData);
+        return this.stockService.updateDetails(productId, updateData);
     }
 }
